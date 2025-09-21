@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Agente</title>
+</head>
+<body>
+<h1>Editar Agente</h1>
+
+<form id="editarAgenteForm">
+    <label for="id">ID:</label>
+    <input type="number" id="id" required><br><br>
+
+    <label for="nome">Nome:</label>
+    <input type="text" id="nome" required><br><br>
+
+    <label for="cpf">CPF:</label>
+    <input type="text" id="cpf" required><br><br>
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" required><br><br>
+
+    <label for="celular">Celular:</label>
+    <input type="text" id="celular" required><br><br>
+
+    <label for="tipo">Tipo:</label>
+    <select id="tipo" required>
+        <option value="AGENTE">Agente Campo</option>
+        <option value="SERVIDOR">Servidor</option>
+        <option value="ADMIN">Admin</option>
+    </select><br><br>
+
+    <label for="foto">Foto (opcional):</label>
+    <input type="file" id="foto" accept="image/*"><br><br>
+
+    <button type="submit">Atualizar Agente</button>
+</form>
+
+<script src="config/config.dev.js"></script>
+<script>
+    const form = document.getElementById('editarAgenteForm');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const id = document.getElementById('id').value;
+        const nome = document.getElementById('nome').value;
+        const cpf = document.getElementById('cpf').value;
+        const email = document.getElementById('email').value;
+        const celular = document.getElementById('celular').value;
+        const tipo = document.getElementById('tipo').value;
+        const foto = document.getElementById('foto').files[0];
+
+        const agenteData = {
+            nome, cpf, email, celular, tipo
+        };
+
+        try {
+            let response;
+
+            if (foto) {
+                // Se existe arquivo, usar POST /atualizar-com-foto
+                const formData = new FormData();
+                formData.append('agente', new Blob([JSON.stringify(agenteData)], { type: "application/json" }));
+                formData.append('foto', foto);
+
+                response = await fetch(`${API_CONFIG.BASE_URL}/${id}/atualizar-com-foto`, {
+                    method: 'POST',
+                    body: formData
+                });
+            } else {
+                // Sem arquivo, usar PUT /{id}
+                response = await fetch(`${API_CONFIG.BASE_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(agenteData)
+                });
+            }
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                alert('Erro ao atualizar: ' + response.status + ' - ' + errorText);
+                return;
+            }
+
+            alert('Agente atualizado com sucesso!');
+        } catch (err) {
+            console.error(err);
+            alert('Erro inesperado ao atualizar agente.');
+        }
+    });
+</script>
+</body>
+</html>

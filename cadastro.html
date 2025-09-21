@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Agente</title>
+</head>
+<body>
+<h1>Cadastrar Agente</h1>
+<form id="cadastroForm" enctype="multipart/form-data">
+    <label>Nome: <input type="text" name="nome" required></label><br>
+    <label>CPF: <input type="text" name="cpf" required></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Celular: <input type="text" name="celular" required></label><br>
+    <label>Tipo:
+        <select name="tipo" required>
+            <option value="AGENTE">Agente</option>
+            <option value="SERVIDOR">Servidor</option>
+            <option value="ADMIN">Admin</option>
+        </select>
+    </label><br>
+    <label>Foto: <input type="file" name="foto" accept="image/*"></label><br>
+    <button type="submit">Cadastrar</button>
+</form>
+
+<p id="mensagem"></p>
+
+<script src="config/config.dev.js"></script>
+<script>
+    document.getElementById("cadastroForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const form = e.target;
+      const agente = {
+        nome: form.nome.value,
+        cpf: form.cpf.value,
+        email: form.email.value,
+        celular: form.celular.value,
+        tipo: form.tipo.value
+      };
+
+      try {
+        // 1. Cria o agente
+        let response = await fetch(API_CONFIG.BASE_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(agente)
+        });
+
+        if (response.status !== 201) {
+          document.getElementById("mensagem").innerText = "Erro ao cadastrar agente!";
+          return;
+        }
+
+        const data = await response.json();
+        const agenteId = data.id;
+
+        // 2. Faz upload da foto se houver
+        if (form.foto.files.length > 0) {
+          const formData = new FormData();
+          formData.append("foto", form.foto.files[0]);
+
+          await fetch(`${API_CONFIG.BASE_URL}/${agenteId}/foto`, {
+            method: "POST",
+            body: formData
+          });
+        }
+
+        document.getElementById("mensagem").innerText = "Agente cadastrado com sucesso!";
+        form.reset();
+      } catch (err) {
+        document.getElementById("mensagem").innerText = "Erro: " + err.message;
+      }
+    });
+</script>
+</body>
+</html>

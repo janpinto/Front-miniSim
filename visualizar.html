@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizar Agentes</title>
+</head>
+<body>
+<h1>Lista de Agentes</h1>
+<button id="carregar">Carregar Agentes</button>
+<div id="lista"></div>
+
+<script src="config/config.dev.js"></script>
+<script>
+    document.getElementById("carregar").addEventListener("click", async () => {
+      try {
+        const response = await fetch(API_CONFIG.BASE_URL);
+        const agentes = await response.json();
+
+        const container = document.getElementById("lista");
+        container.innerHTML = "";
+
+        agentes.forEach(agente => {
+          const div = document.createElement("div");
+          div.innerHTML = `
+            <p><b>ID:</b> ${agente.id} | <b>Nome:</b> ${agente.nome} | <b>Email:</b> ${agente.email}</p>
+            ${agente.fotoUrl ? `<img src="${API_CONFIG.BASE_URL}/${agente.id}/foto" width="100">` : "<i>Sem foto</i>"}
+            <hr>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        alert("Erro ao carregar agentes: " + err.message);
+      }
+    });
+</script>
+</body>
+</html>

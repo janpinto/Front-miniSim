@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Deletar Agente</title>
+</head>
+<body>
+<h1>Deletar Agente</h1>
+
+<form id="deletarAgenteForm">
+    <label for="id">ID do Agente:</label>
+    <input type="number" id="id" required><br><br>
+
+    <button type="button" id="deletarAgenteBtn">Deletar Agente</button>
+</form>
+
+<script src="config/config.dev.js"></script>
+<script>
+    const deletarAgenteBtn = document.getElementById('deletarAgenteBtn');
+
+    deletarAgenteBtn.addEventListener('click', async () => {
+        const id = document.getElementById('id').value;
+        if (!id) { alert('Informe o ID do agente.'); return; }
+        if (!confirm(`Deseja realmente deletar o agente de ID ${id}?`)) return;
+
+        try {
+            const response = await fetch(`${API_CONFIG.BASE_URL}/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                alert('Erro ao deletar agente: ' + response.status + ' - ' + errorText);
+                return;
+            }
+
+            alert('Agente e foto deletados com sucesso!');
+        } catch (err) {
+            console.error(err);
+            alert('Erro inesperado ao deletar agente.');
+        }
+    });
+</script>
+</body>
+</html>
