@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Arquivo MTA</title>
+</head>
+<body>
+<h1>Upload Arquivo MTA</h1>
+
+<form id="uploadForm" enctype="multipart/form-data">
+    <label>ID do Agente: <input type="number" name="agenteId" required></label><br><br>
+    <label>Arquivo: <input type="file" name="arquivo" required></label><br><br>
+    <button type="submit">Enviar</button>
+</form>
+
+<p id="mensagem"></p>
+
+<script>
+    const BASE_URL = "http://localhost:8080/simpag-rs/api/v1/agente-arquivos-mta";
+
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const agenteId = form.agenteId.value;
+
+      const formData = new FormData();
+      formData.append("arquivo", form.arquivo.files[0]);
+
+      try {
+        const response = await fetch(`${BASE_URL}/${agenteId}/arquivomta`, {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) {
+          document.getElementById("mensagem").innerText = "Erro ao enviar arquivo!";
+          return;
+        }
+
+        const data = await response.json();
+        document.getElementById("mensagem").innerText =
+          "Upload realizado com sucesso! Arquivo: " + data.arquivo;
+        form.reset();
+      } catch (err) {
+        document.getElementById("mensagem").innerText = "Erro: " + err.message;
+      }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Agente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+        input, button {
+            margin: 5px;
+            padding: 5px;
+        }
+        .menu {
+            margin-bottom: 20px;
+        }
+        .menu a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: blue;
+        }
+        .menu a:hover {
+            text-decoration: underline;
+        }
+        .resultado {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #aaa;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+<div class="menu">
+    <a href="index.html">Cadastrar / Listar Agentes</a>
+    <a href="agente.html">Buscar Agente por ID</a>
+</div>
+
+<h1>Buscar Agente por ID</h1>
+<form id="buscarForm">
+    <input type="number" id="id" placeholder="Digite o ID do agente" required>
+    <button type="submit">Buscar</button>
+</form>
+
+<div class="resultado" id="resultado">
+    <!-- resultado da busca -->
+</div>
+
+<script>
+    const apiUrl = "/agentes"; // ✅ relativo (funciona no Spring Boot)
+
+    document.getElementById("buscarForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const id = document.getElementById("id").value;
+
+        const response = await fetch(`${API_CONFIG.BASE_URL}/${id}`);
+
+        const resultadoDiv = document.getElementById("resultado");
+        if (response.ok) {
+            const agente = await response.json();
+            resultadoDiv.innerHTML = `
+                <p><strong>ID:</strong> ${agente.id}</p>
+                <p><strong>Nome:</strong> ${agente.nome}</p>
+                <p><strong>Email:</strong> ${agente.email}</p>
+            `;
+        } else {
+            resultadoDiv.innerHTML = `<p style="color:red;">Agente não encontrado.</p>`;
+        }
+    });
+</script>
+</body>
+</html>

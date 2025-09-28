@@ -65,7 +65,7 @@
           });
         }
 
-        document.getElementById("mensagem").innerText = "Agente cadastrado com sucesso!";
+        document.getElementById("mensagem").innerText = "Agente cadastrado com sucesso!, id: "+data.id;
         form.reset();
       } catch (err) {
         document.getElementById("mensagem").innerText = "Erro: " + err.message;
